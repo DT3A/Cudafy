@@ -1,0 +1,14 @@
+Bin/
+bin/
+obj/
+Debug/
+Release/
+TestResults/
+*.vsp
+*.sdf
+*.suo
+*.cachefile
+*.user
+*.opensdf
+*.ipch
+*.shaderInfo
