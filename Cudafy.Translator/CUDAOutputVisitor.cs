@@ -868,15 +868,13 @@ namespace Cudafy.Translator
 		public object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
 		{
 			StartNode(defaultValueExpression);
-			
-			//WriteKeyword("default");
-			//LPar();
-			//Space(policy.SpacesWithinTypeOfParentheses);
-			defaultValueExpression.Type.AcceptVisitor(this, data);
-			//Space(policy.SpacesWithinTypeOfParentheses);
-			//RPar();
-            LPar();
-            RPar();
+
+            WriteToken("{", AstNode.Roles.LBrace);
+            
+            formatter.WriteToken("0");
+
+            WriteToken("}", AstNode.Roles.RBrace);
+
 			return EndNode(defaultValueExpression);
 		}
 		
