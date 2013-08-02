@@ -432,16 +432,42 @@ namespace Cudafy.Translator
             //    if (strct.GetCustomAttributes(typeof(CudafyAttribute), false).Length == 0)
             //        throw new CudafyLanguageException(CudafyLanguageException.csCUDAFY_ATTRIBUTE_IS_MISSING_ON_X, strct.Name);
 
-            IEnumerable<Type> typeList = GetWithNestedTypes(types);
+           
+            var typeList = GetWithNestedTypes(types).ToList();
+
             foreach (var type in typeList)
             {
                 if(!modules.ContainsKey(type.Assembly.Location))
                     modules.Add(type.Assembly.Location, ModuleDefinition.ReadModule(type.Assembly.Location));                
             }
-            
-            foreach (var kvp in modules)
+                
+            // Get the types in the same order as specified
+            // in the arguments
+            var allTypes =
+                (
+                    from kvp in modules
+                    from td in kvp.Value.Types
+
+                    let rangeIndex = typeList.FindIndex(t => t.FullName == td.FullName)
+
+                    // We want only custom at the begining.
+                    // Other types shall be added at the end
+                    let finalOrderIndex = rangeIndex >= 0 ? rangeIndex : int.MaxValue
+
+                    orderby finalOrderIndex
+
+                    group td by kvp into modulesDef
+
+                    select new
+                    {
+                        ModuleDef = modulesDef.Key,
+                        ModuleTypes = modulesDef.ToArray()
+                    }
+                ).ToArray();
+
+            foreach (var kvp in allTypes)
             {
-                foreach (var td in kvp.Value.Types)
+                foreach (var td in kvp.ModuleTypes)
                 {
                     List<TypeDefinition> tdList = new List<TypeDefinition>();
                     tdList.Add(td);
