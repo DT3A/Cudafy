@@ -866,17 +866,25 @@ namespace Cudafy.Translator
 		}
 		
 		public object VisitDefaultValueExpression(DefaultValueExpression defaultValueExpression, object data)
-		{
-			StartNode(defaultValueExpression);
+        {
+            StartNode(defaultValueExpression);
 
-            WriteToken("{", AstNode.Roles.LBrace);
-            
-            formatter.WriteToken("0");
+            WriteToken("(", AstNode.Roles.LPar);
+            {
+                WriteToken("(", AstNode.Roles.LPar);
+                defaultValueExpression.Type.AcceptVisitor(this, data);
+                WriteToken(")", AstNode.Roles.RPar);
 
-            WriteToken("}", AstNode.Roles.RBrace);
+                WriteToken("{", AstNode.Roles.LBrace);
 
-			return EndNode(defaultValueExpression);
-		}
+                formatter.WriteToken("0");
+
+                WriteToken("}", AstNode.Roles.RBrace);
+            }
+            WriteToken(")", AstNode.Roles.RPar);
+
+            return EndNode(defaultValueExpression);
+        }
 		
 		public object VisitDirectionExpression(DirectionExpression directionExpression, object data)
 		{
